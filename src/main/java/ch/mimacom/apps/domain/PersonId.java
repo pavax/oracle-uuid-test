@@ -1,5 +1,6 @@
 package ch.mimacom.apps.domain;
 
+import com.google.common.base.Objects;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Access;
@@ -27,5 +28,29 @@ public class PersonId implements Serializable {
 
     public UUID getValue() {
         return value;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("value", value)
+                .toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PersonId personId = (PersonId) o;
+
+        if (!value.equals(personId.value)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
     }
 }

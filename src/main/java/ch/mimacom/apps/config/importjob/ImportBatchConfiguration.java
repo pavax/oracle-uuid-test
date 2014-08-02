@@ -1,7 +1,9 @@
 package ch.mimacom.apps.config.importjob;
 
+import ch.mimacom.apps.domain.Address;
 import ch.mimacom.apps.domain.Person;
 import ch.mimacom.apps.internal.TimeLoggingChunkListener;
+import ch.mimacom.apps.internal.XSRandom;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -16,6 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 
 import javax.persistence.EntityManagerFactory;
+import java.util.Random;
 
 @Configuration
 public class ImportBatchConfiguration {
@@ -25,6 +28,7 @@ public class ImportBatchConfiguration {
         final int maxPersonsToCreate = importBatchJobSettings.getMaxPersonsToCreate();
         return new ItemReader<Person>() {
             int counter = 0;
+            Random random = new XSRandom(84758247582475L);
 
             @Override
             public Person read() throws Exception {
@@ -32,7 +36,27 @@ public class ImportBatchConfiguration {
                     return null;
                 }
                 counter++;
-                return new Person(RandomStringUtils.randomAlphabetic(25));
+                Address[] addresses = new Address[createRandomInt(3, 1)];
+                for (int i = 0; i < addresses.length; i++) {
+                    addresses[i] = createRandomAddress();
+                }
+                return new Person(createRandomLengthRandomString(33, 6), createRandomLengthRandomString(25, 10), addresses);
+            }
+
+            private String createRandomLengthRandomString(int max, int min) {
+                return RandomStringUtils.random(createRandomInt(max, min), 0, 0, true, false, null, random);
+            }
+
+            private Address createRandomAddress() {
+                return new Address(createFixedLengthRandomString(12), createFixedLengthRandomString(15), RandomStringUtils.randomNumeric(4));
+            }
+
+            private String createFixedLengthRandomString(int count) {
+                return RandomStringUtils.random(count, 0, 0, true, false, null, random);
+            }
+
+            private int createRandomInt(int max, int min) {
+                return random.nextInt((max - min) + 1) + min;
             }
         };
     }

@@ -27,14 +27,15 @@ import javax.persistence.Query;
 public class ExportBatchJobConfiguration {
 
     @Bean
-    public ItemReader<Person> jpaItemReader(EntityManagerFactory entityManagerFactory,ExportBatchJobSettings exportBatchJobSettings) {
+    public ItemReader<Person> jpaItemReader(EntityManagerFactory entityManagerFactory, ExportBatchJobSettings exportBatchJobSettings) {
         JpaPagingItemReader<Person> itemReader = new JpaPagingItemReader<Person>();
         itemReader.setEntityManagerFactory(entityManagerFactory);
         //itemReader.setQueryString("select p from Person as p");
         itemReader.setPageSize(exportBatchJobSettings.getPageReadSize());
         itemReader.setQueryProvider(new AbstractJpaQueryProvider() {
             @Override
-            public void afterPropertiesSet() throws Exception {}
+            public void afterPropertiesSet() throws Exception {
+            }
 
             @Override
             public Query createQuery() {
@@ -52,9 +53,9 @@ public class ExportBatchJobConfiguration {
         itemWriter.setResource(exportBatchJobSettings.getFile());
         FormatterLineAggregator<Person> lineAggregator = new FormatterLineAggregator<Person>();
         BeanWrapperFieldExtractor<Person> fieldExtractor = new BeanWrapperFieldExtractor<Person>();
-        fieldExtractor.setNames(new String[]{"personId.value","name"});
+        fieldExtractor.setNames(new String[]{"personId.value", "firstName", "lastName"});
         lineAggregator.setFieldExtractor(fieldExtractor);
-        lineAggregator.setFormat("%-36s|%-25S|");
+        lineAggregator.setFormat("%-36s|%-25S|%-25S|");
         itemWriter.setLineAggregator(lineAggregator);
 
         return itemWriter;
