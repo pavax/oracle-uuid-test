@@ -54,7 +54,7 @@ public class ExportBatchJobConfiguration {
         BeanWrapperFieldExtractor<Person> fieldExtractor = new BeanWrapperFieldExtractor<Person>();
         fieldExtractor.setNames(new String[]{"personId.value","name"});
         lineAggregator.setFieldExtractor(fieldExtractor);
-        lineAggregator.setFormat("%-36s|%-20S|");
+        lineAggregator.setFormat("%-36s|%-25S|");
         itemWriter.setLineAggregator(lineAggregator);
 
         return itemWriter;
